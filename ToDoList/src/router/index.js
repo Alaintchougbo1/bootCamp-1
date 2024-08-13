@@ -15,8 +15,8 @@ const router = createRouter({
     {
       path: '/home',
       name: 'home',
-      component: HomeView
-      // meta: { requiresAuth: true }
+      component: HomeView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/signup',
@@ -30,13 +30,12 @@ router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
   const isAuthenticated = !!authStore.currentUser
 
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
-    // La route nécessite une authentification
-    if (!isAuthenticated) {
-      next('/')
-    } else {
-      next('/home')
-    }
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    // Dans le cas où l'utilisateur n'est pas connecté
+    next('/')
+  } else if (isAuthenticated && to.path === '/') {
+    // Redirection si l'utilisateur est connecté
+    next('/home')
   } else {
     next()
   }
