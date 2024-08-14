@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { reactive } from 'vue'
+import bcrypt from 'bcryptjs'
 
 export const useTodoStore = defineStore({
   id: 'todo',
@@ -69,6 +70,9 @@ export const useTodoStore = defineStore({
   persist: true
 })
 
+
+
+
 export const useAuthStore = defineStore({
   id: 'auth',
   state: () => ({
@@ -97,17 +101,22 @@ export const useAuthStore = defineStore({
       }
     },
 
-    registerUser(user) {
-      this.users.push(user)
+    async registerUser({ email, password }) {
+      const hashedPassword = await bcrypt.hash(password, 10)
+      const newUser = { email, password: hashedPassword }
+      this.users.push(newUser)
       this.saveUsers()
     },
 
-    loginUser({ email, password }) {
-      const user = this.users.find((u) => u.email === email && u.password === password)
+    async loginUser({ email, password }) {
+      const user = this.users.find((u) => u.email === email)
       if (user) {
-        this.currentUser = user
-        this.saveUsers()
-        return true
+        const match = await bcrypt.compare(password, user.password)
+        if (match) {
+          this.currentUser = user
+          this.saveUsers()
+          return true
+        }
       }
       return false
     },

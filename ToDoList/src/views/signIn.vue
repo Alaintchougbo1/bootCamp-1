@@ -15,9 +15,7 @@
           />
         </div>
         <div>
-          <label for="loginPassword" class="block text-sm font-medium text-gray-700"
-            >Mot de passe</label
-          >
+          <label for="loginPassword" class="block text-sm font-medium text-gray-700">Mot de passe</label>
           <input
             id="loginPassword"
             v-model="loginPassword"
@@ -52,9 +50,9 @@ const loginPassword = ref('')
 const router = useRouter()
 const store = useAuthStore()
 
-function login() {
+async function login() {
   if (loginEmail.value && loginPassword.value) {
-    const success = store.loginUser({ email: loginEmail.value, password: loginPassword.value })
+    const success = await store.loginUser({ email: loginEmail.value, password: loginPassword.value })
     if (success) {
       loginEmail.value = ''
       loginPassword.value = ''

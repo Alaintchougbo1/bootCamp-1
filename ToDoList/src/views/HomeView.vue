@@ -1,8 +1,9 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useTodoStore } from '@/stores/todo'
 
 const store = useTodoStore()
+
 const newTask = ref({
   title: '',
   description: '',
@@ -15,9 +16,9 @@ const editTask = ref({ ...newTask.value })
 
 const tasks = computed(() => store.tasks)
 
-function addTask() {
+async function addTask() {
   try {
-    store.addTask({ ...newTask.value, done: false })
+    await store.addTask({ ...newTask.value, done: false })
     newTask.value = {
       title: '',
       description: '',
@@ -30,9 +31,13 @@ function addTask() {
   }
 }
 
-function removeTask(index) {
+async function removeTask(index) {
   if (confirm('Êtes-vous sûr de vouloir supprimer cette tâche ?')) {
-    store.removeTask(index)
+    try {
+      await store.removeTask(index)
+    } catch (error) {
+      alert(error.message)
+    }
   }
 }
 
@@ -41,9 +46,9 @@ function startEditTask(index) {
   editTask.value = { ...store.tasks[index] }
 }
 
-function saveEditTask() {
+async function saveEditTask() {
   try {
-    store.updateTask(editIndex.value, { ...editTask.value })
+    await store.updateTask(editIndex.value, { ...editTask.value })
     editIndex.value = null
     editTask.value = {}
   } catch (error) {
@@ -55,6 +60,10 @@ function cancelEdit() {
   editIndex.value = null
   editTask.value = {}
 }
+
+watch(tasks, (newTasks) => {
+  console.log('Tâches mises à jour:', newTasks)
+})
 </script>
 
 <template>
@@ -111,9 +120,9 @@ function cancelEdit() {
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-2">
                 <input type="checkbox" v-model="task.done" class="form-checkbox" />
-                <span :class="{ 'line-through': task.done }" class="ml-2 font-bold">{{
-                  task.title
-                }}</span>
+                <span :class="{ 'line-through': task.done }" class="ml-2 font-bold">
+                  {{ task.title }}
+                </span>
               </div>
               <div class="flex space-x-2">
                 <button
