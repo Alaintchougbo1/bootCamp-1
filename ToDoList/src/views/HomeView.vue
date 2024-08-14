@@ -1,8 +1,12 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { useTodoStore } from '@/stores/todo'
+import { useAuthStore } from '@/stores/todo'
 
+const router = useRouter()
 const store = useTodoStore()
+const authStore = useAuthStore()
 
 const newTask = ref({
   title: '',
@@ -61,6 +65,11 @@ function cancelEdit() {
   editTask.value = {}
 }
 
+function logout() {
+  authStore.logoutUser()
+  router.push('/')
+}
+
 watch(tasks, (newTasks) => {
   console.log('Tâches mises à jour:', newTasks)
 })
@@ -69,6 +78,12 @@ watch(tasks, (newTasks) => {
 <template>
   <div class="p-6 bg-gray-100 min-h-screen">
     <h1 class="text-3xl font-semibold text-center mb-6">Todo List</h1>
+    <button
+      @click="logout"
+      class="mb-6 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+    >
+      Déconnexion
+    </button>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="bg-white p-6 max-h-[500px] rounded-lg shadow-lg">
         <h2 class="text-2xl font-semibold mb-4">Ajouter une tâche</h2>
