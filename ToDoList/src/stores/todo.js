@@ -1,21 +1,22 @@
 import { defineStore } from 'pinia'
-import { reactive } from 'vue'
 import bcrypt from 'bcryptjs'
 
 export const useTodoStore = defineStore({
   id: 'todo',
   state: () => ({
-    tasks: reactive([])
+    tasks: []
   }),
   actions: {
     loadTasks() {
       const savedTasks = localStorage.getItem('tasks')
+      console.log('Loaded tasks:', savedTasks)
       if (savedTasks) {
         this.tasks = JSON.parse(savedTasks)
       }
     },
 
     saveTasks() {
+      console.log('Saving tasks:', this.tasks)
       localStorage.setItem('tasks', JSON.stringify(this.tasks))
     },
 
@@ -99,7 +100,6 @@ export const useTodoStore = defineStore({
       this.saveTasks()
     }
   },
-
   persist: true
 })
 
@@ -112,17 +112,20 @@ export const useAuthStore = defineStore({
   actions: {
     loadUsers() {
       const savedUsers = localStorage.getItem('users')
+      console.log('Loaded users:', savedUsers)
       if (savedUsers) {
         this.users = JSON.parse(savedUsers)
       }
 
       const savedCurrentUser = localStorage.getItem('currentUser')
+      console.log('Loaded current user:', savedCurrentUser)
       if (savedCurrentUser) {
         this.currentUser = JSON.parse(savedCurrentUser)
       }
     },
 
     saveUsers() {
+      console.log('Saving users:', this.users)
       localStorage.setItem('users', JSON.stringify(this.users))
       if (this.currentUser) {
         localStorage.setItem('currentUser', JSON.stringify(this.currentUser))
@@ -161,6 +164,5 @@ export const useAuthStore = defineStore({
       this.saveUsers()
     }
   },
-
   persist: true
 })
